@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sel-java-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sel-java-app
+  template:
+    metadata:
+      labels:
+        app: sel-java-app
+    spec:
+      containers:
+      - name: sel-java-app
+        image: <your-dockerhub-username>/sel-java-app:latest
+        ports:
+        - containerPort: 8080
