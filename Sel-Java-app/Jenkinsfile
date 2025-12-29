@@ -23,25 +23,31 @@ pipeline {
 
         stage('Build') {
             steps {
+                dir('Sel-Java-app') {
                 sh 'mvn clean package'
+                }
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
+                dir('Sel-Java-app') {
                 withSonarQubeEnv('SonarQube') {
                     sh '''
                     mvn sonar:sonar \
                     -Dsonar.projectKey=sel-java-app \
                     -Dsonar.projectName=sel-java-app
                     '''
+                    }
                 }
             }
         }
 
         stage('Docker Build') {
             steps {
+                dir('Sel-Java-app') {
                 sh 'docker build -t $IMAGE_NAME:$TAG .'
+                }
             }
         }
 
