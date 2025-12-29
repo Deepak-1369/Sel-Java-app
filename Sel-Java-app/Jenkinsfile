@@ -2,12 +2,12 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven'
-        jdk 'Java11'
+        maven 'Mavan'      // must match Jenkins Global Tool name
+        jdk 'java11'       // must match Jenkins Global Tool name
     }
 
     environment {
-        IMAGE_NAME = "deepakjava/java-demo-app"
+        IMAGE_NAME = "deepakjava/sel-java-app"
         TAG = "latest"
     }
 
@@ -16,7 +16,8 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/<your-username>/java-demo-app.git'
+                    url: 'https://github.com/Deepak-1369/Sel-Java-app.git',
+                    credentialsId: 'github-creds'
             }
         }
 
@@ -31,8 +32,8 @@ pipeline {
                 withSonarQubeEnv('SonarQube') {
                     sh '''
                     mvn sonar:sonar \
-                    -Dsonar.projectKey=java-demo \
-                    -Dsonar.projectName=java-demo
+                    -Dsonar.projectKey=sel-java-app \
+                    -Dsonar.projectName=sel-java-app
                     '''
                 }
             }
@@ -46,7 +47,9 @@ pipeline {
 
         stage('Docker Push') {
             steps {
-                withDockerRegistry([credentialsId: 'dockerhub-creds']) {
+                withDockerRegistry(
+                    [url: 'https://index.docker.io/v1/', credentialsId: 'dockerhub-creds']
+                ) {
                     sh 'docker push $IMAGE_NAME:$TAG'
                 }
             }
