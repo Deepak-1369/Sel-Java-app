@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: sel-java-app
-        image: <your-dockerhub-username>/sel-java-app:latest
+        image: deepakjava/sel-java-app:latest
         ports:
         - containerPort: 8080
