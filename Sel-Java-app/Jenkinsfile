@@ -20,9 +20,9 @@ pipeline {
         stage('Build') {
             steps {
                 // Navigate to the folder that contains pom.xml
-                // dir('java-app') {
+                 dir('Sel-Java-app') {
                     sh 'mvn clean package'
-               // }
+                }
             }
         }
 
