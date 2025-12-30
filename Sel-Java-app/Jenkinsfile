@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     tools {
-        maven 'Mavan'      // must match Jenkins Global Tool name
-        jdk 'java11'       // must match Jenkins Global Tool name
+        maven 'Maven'
+        jdk 'Java11'
     }
 
     environment {
@@ -13,48 +13,48 @@ pipeline {
 
     stages {
 
+        stage('Clean Workspace') {
+            steps {
+                deleteDir()
+            }
+        }
+
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/Deepak-1369/Sel-Java-app.git',
-                    credentialsId: 'github-creds'
+                    url: 'https://github.com/Deepak-1369/Sel-Java-app.git'
             }
         }
 
         stage('Build') {
             steps {
-                dir('Sel-Java-app') {
                 sh 'mvn clean package'
-                }
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                dir('Sel-Java-app') {
                 withSonarQubeEnv('SonarQube') {
                     sh '''
-                    mvn sonar:sonar \
-                    -Dsonar.projectKey=sel-java-app \
-                    -Dsonar.projectName=sel-java-app
+                      mvn sonar:sonar \
+                      -Dsonar.projectKey=sel-java-app \
+                      -Dsonar.projectName=sel-java-app
                     '''
-                    }
                 }
             }
         }
 
         stage('Docker Build') {
             steps {
-                dir('Sel-Java-app') {
                 sh 'docker build -t $IMAGE_NAME:$TAG .'
-                }
             }
         }
 
         stage('Docker Push') {
             steps {
                 withDockerRegistry(
-                    [url: 'https://index.docker.io/v1/', credentialsId: 'dockerhub-creds']
+                    credentialsId: 'dockerhub-creds',
+                    url: 'https://index.docker.io/v1/'
                 ) {
                     sh 'docker push $IMAGE_NAME:$TAG'
                 }
