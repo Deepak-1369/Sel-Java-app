@@ -3,7 +3,7 @@ pipeline {
 
     tools {
         maven 'Maven'
-        jdk 'Java11'
+        jdk 'java11'
     }
 
     environment {
@@ -13,27 +13,9 @@ pipeline {
 
     stages {
 
-        stage('Clean Workspace') {
-            steps {
-                deleteDir()
-            }
-        }
-
         stage('Build') {
             steps {
                 sh 'mvn clean package'
-            }
-        }
-
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh '''
-                      mvn sonar:sonar \
-                      -Dsonar.projectKey=sel-java-app \
-                      -Dsonar.projectName=sel-java-app
-                    '''
-                }
             }
         }
 
