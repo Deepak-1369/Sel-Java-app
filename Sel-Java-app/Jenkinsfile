@@ -28,8 +28,9 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                // Example: build docker image only if Maven build succeeded
-                sh 'docker build -t java-app-image:latest .'
+                dir('Sel-Java-app') {
+                    sh 'docker build -t java-app-image:latest .'
+                }
             }
         }
 
