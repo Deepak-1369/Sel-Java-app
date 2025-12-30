@@ -19,13 +19,6 @@ pipeline {
             }
         }
 
-        stage('Checkout') {
-            steps {
-                git branch: 'main',
-                    url: 'https://github.com/Deepak-1369/Sel-Java-app.git'
-            }
-        }
-
         stage('Build') {
             steps {
                 sh 'mvn clean package'
