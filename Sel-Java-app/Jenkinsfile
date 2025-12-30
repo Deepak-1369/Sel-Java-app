@@ -2,38 +2,53 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven'
-        jdk 'Java11'
+        // Make sure these match the names you configured in Jenkins
+        jdk 'Java11'        // Case-sensitive: match your Jenkins JDK name
+        maven 'Maven'       // Case-sensitive: match your Jenkins Maven installation
     }
 
     environment {
-        IMAGE_NAME = "deepakjava/sel-java-app"
-        TAG = "latest"
+        DOCKER_IMAGE = 'deepakjava/sel-java-app:latest'
+        DOCKER_REGISTRY = 'docker.io'  // optional, change if needed
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                // Checkout your repo using the Git credential
+                git url: 'https://github.com/Deepak-1369/Sel-Java-app.git', credentialsId: 'github-creds', branch: 'main'
+            }
+        }
 
         stage('Build') {
             steps {
-                sh 'mvn clean package'
+                dir('java-app') {  // Change to the folder where your pom.xml exists
+                    sh 'mvn clean package'
+                }
             }
         }
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t $IMAGE_NAME:$TAG .'
+                dir('java-app') {
+                    sh "docker build -t ${DOCKER_IMAGE} ."
+                }
             }
         }
 
         stage('Docker Push') {
             steps {
-                withDockerRegistry(
-                    credentialsId: 'dockerhub-creds',
-                    url: 'https://index.docker.io/v1/'
-                ) {
-                    sh 'docker push $IMAGE_NAME:$TAG'
-                }
+                sh "docker push ${DOCKER_IMAGE}"
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Check logs.'
         }
     }
 }
